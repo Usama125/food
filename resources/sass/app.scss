@@ -8,6 +8,9 @@
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 
+// Font Awesome 
+@import '~font-awesome/scss/font-awesome';
+
 .navbar-laravel {
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
@@ -244,3 +247,284 @@ hr{border:0;border-top:1px solid #eee;margin:20px 0}
 .w3-border-dark-grey,.w3-hover-border-dark-grey:hover,.w3-border-dark-gray,.w3-hover-border-dark-gray:hover{border-color:#616161!important}
 .w3-border-pale-red,.w3-hover-border-pale-red:hover{border-color:#ffe7e7!important}.w3-border-pale-green,.w3-hover-border-pale-green:hover{border-color:#e7ffe7!important}
 .w3-border-pale-yellow,.w3-hover-border-pale-yellow:hover{border-color:#ffffcc!important}.w3-border-pale-blue,.w3-hover-border-pale-blue:hover{border-color:#e7ffff!important}
+/* http://www.menucool.com/jquery-slider */
+
+    #closeBtn {
+        display:block;
+        position:fixed;
+        top:12px;
+        right:6px;
+        font:bold 18px/26px Arial;
+        color:white;
+        width:80px;
+        height:26px;
+        border:1px solid rgba(255,255,255,0.4);
+        background-color:rgba(255,0,0,0.85);
+        cursor:pointer;
+        text-align:center;
+        z-index:2;
+    }
+
+#thumbs2 {
+    margin:0 auto; /*center-aligned*/
+    height:100%;
+    display:block;
+    padding:0px;
+    position:fixed;
+    background-color:rgba(0,0,0,0.5);
+    left:0;right:0;top:0;bottom:0;
+    z-index: 9999;
+    -webkit-user-select: none;
+    user-select:none;
+}
+
+#thumbs2 div.inner {
+    padding:0 20px;
+    background-color:rgba(0,0,0,0.2);
+
+    /*the followings should not be changed */
+    height:100%;
+    box-sizing:content-box;
+    position:relative;
+    overflow:hidden;
+    margin:0 auto;
+}
+
+ 
+#thumbs2 div.inner ul {
+    
+    /*the followings should not be changed */
+    position:relative;
+    left:0; top:0;
+    list-style:none;
+    font-size:0;
+    padding:0;
+    margin:0;
+    float:left!important;
+    width:auto!important;
+    height:auto!important;
+}
+
+#thumbs2 ul li {
+    background-color:black;
+    display:block;
+    margin:8px 0; /* Spacing between thumbs*/
+    transition:all 0.5s;
+    box-sizing:content-box;
+    
+    text-align:center;
+    padding:0;
+    position:relative;
+    list-style:none;
+    backface-visibility:hidden;
+
+	-webkit-filter: grayscale(100%);
+	filter: grayscale(100%);
+}
+
+#thumbs2 ul li.active {
+    opacity:1;
+	-webkit-filter: initial;
+	filter: initial;
+}
+
+#thumbs2 li:hover {
+	-webkit-filter: grayscale(50%);
+	filter: grayscale(50%);
+}
+
+
+#thumbs2 .thumb {
+    opacity:0.5;
+    
+    width:100%;
+    height: 100%;
+    background-size:contain;
+    background-repeat:no-repeat;
+    background-position:center center;
+    display:block;
+    position:absolute;
+}
+
+#thumbs2 ul li.active .thumb {
+    opacity:1;
+}
+/* --------- navigation controls ------- */
+/* The nav id should be: slider id + ("-prev", "-next", and "-pause-play") */
+
+#thumbs2-pause-play {display:none;} /*.pause*/
+
+#thumbs2-prev, #thumbs2-next
+{
+    display:none;
+}
+/* http://www.menucool.com/jquery-slider */
+
+#thumbnail-slider {
+    margin:0 auto; /*center-aligned*/
+    width:100%;/*width:400px;*/
+    padding:4px 40px;/*Gives room for arrow buttons*/
+    box-sizing:border-box;
+    position:relative;
+    -webkit-user-select: none;
+    user-select:none;
+}
+
+#thumbnail-slider div.inner {
+    /*border:4px solid rgba(0,0,0,0.3);*/
+    background-color:transparent;
+
+    /*the followings should not be changed */
+    position:relative;
+    overflow:hidden;
+    padding:2px 0;
+    margin:0;
+}
+
+ 
+#thumbnail-slider div.inner ul {
+    
+    /*the followings should not be changed */
+    white-space:nowrap;
+    position:relative;
+    left:0; top:0;
+    list-style:none;
+    font-size:0;
+    padding:0;
+    margin:0;
+    float:left!important;
+    width:auto!important;
+    height:auto!important;
+}
+
+#thumbnail-slider ul li {
+    opacity:0.5;
+    display:inline-block;
+    *display:inline!important; /*IE7 hack*/
+
+    margin:0 4px; /* Spacing between thumbs*/
+    transition:border-color 0.5s;
+    box-sizing:content-box;
+    
+    text-align:center;
+    vertical-align:middle;
+    padding:0;
+    position:relative;
+    list-style:none;
+    backface-visibility:hidden;
+}
+
+#thumbnail-slider ul li.active {
+    opacity:1;
+}
+
+    #thumbnail-slider ul li:after {
+        content:"ENLARGE";
+        display:block;
+        position:absolute;
+        top:7px;
+        right:8px;
+        font:bold 9px/18px Arial;
+        color:white;
+        width:60px;
+        height:18px;
+        border:1px solid rgba(255,255,255,0.4);
+        background-color:rgba(0,0,0,0.5);
+        z-index:2;
+        cursor:pointer;        
+        text-align:center;
+    }
+    #thumbnail-slider ul li.active:after {
+        font-size:10px;
+        background-color:#C00;
+    }
+
+#thumbnail-slider li:hover {
+    opacity:0.8;
+}
+
+
+#thumbnail-slider .thumb {
+    width:100%;
+    height: 100%;
+    background-size:contain;
+    background-repeat:no-repeat;
+    background-position:center center;
+    display:block;
+    position:absolute;
+    font-size:0;
+}
+
+/* --------- navigation controls ------- */
+/* The nav id should be: slider id + ("-prev", "-next", and "-pause-play") */
+
+#thumbnail-slider-pause-play {display:none;} /*.pause*/
+
+#thumbnail-slider-prev, #thumbnail-slider-next
+{
+    opacity:1;
+    position: absolute;
+    background-color:rgba(0,0,0,0.1);
+    *background-color:#ccc;/*IE7 hack*/
+    backface-visibility:hidden;
+    width:36px;
+    height:48px;
+    line-height:48px;
+    top: 50%;
+    margin:0;
+    margin-top:-24px;
+    color:white;    
+    z-index:10;
+    cursor:pointer;
+}
+
+#thumbnail-slider-prev {
+    left:0px; right:auto;
+}
+
+#thumbnail-slider-next {
+    left:auto; right:0px;
+}
+#thumbnail-slider-next.disabled, #thumbnail-slider-prev.disabled {
+    opacity:0.3;
+    cursor:default;
+}
+
+
+/* arrows */
+#thumbnail-slider-prev::before, #thumbnail-slider-next::before {
+    position: absolute;
+    top: 16px;
+    content: "";
+    display: block;
+    width: 16px;
+    height: 16px;
+    border-left: 3px solid white;
+    border-top: 3px solid white;
+}
+
+#thumbnail-slider-prev::before {
+    left:13px;
+    -ms-transform:rotate(-45deg);/*IE9*/
+    -webkit-transform:rotate(-45deg);
+    transform: rotate(-45deg);
+}
+
+#thumbnail-slider-next::before {
+    right:13px;
+    -ms-transform:rotate(135deg);/*IE9*/
+    -webkit-transform:rotate(135deg);
+    transform: rotate(135deg);
+}
+
+/*Responsive settings*/
+@media only screen and (max-width:736px){
+    
+    #thumbnail-slider {
+        padding:0;
+    }
+
+    #thumbnail-slider-prev, #thumbnail-slider-next {
+        display:none;
+    }
+}

@@ -70,7 +70,7 @@
 "use strict";
 
 
-var bind = __webpack_require__(5);
+var bind = __webpack_require__(6);
 var isBuffer = __webpack_require__(20);
 
 /*global toString:true*/
@@ -402,6 +402,115 @@ module.exports = g;
 
 /***/ }),
 /* 2 */
+/***/ (function(module, exports) {
+
+/* globals __VUE_SSR_CONTEXT__ */
+
+// IMPORTANT: Do NOT use ES2015 features in this file.
+// This module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle.
+
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  functionalTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier /* server only */
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+
+  // ES6 modules interop
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+    options._compiled = true
+  }
+
+  // functional template
+  if (functionalTemplate) {
+    options.functional = true
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+
+  var hook
+  if (moduleIdentifier) { // server build
+    hook = function (context) {
+      // 2.3 injection
+      context =
+        context || // cached call
+        (this.$vnode && this.$vnode.ssrContext) || // stateful
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
+      // 2.2 with runInNewContext: true
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
+      }
+      // inject component styles
+      if (injectStyles) {
+        injectStyles.call(this, context)
+      }
+      // register component module identifier for async chunk inferrence
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
+    }
+    // used by ssr in case component is cached and beforeCreate
+    // never gets called
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = injectStyles
+  }
+
+  if (hook) {
+    var functional = options.functional
+    var existing = functional
+      ? options.render
+      : options.beforeCreate
+
+    if (!functional) {
+      // inject component registration as beforeCreate hook
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
+    } else {
+      // for template-only hot-reload because in that case the render fn doesn't
+      // go through the normalizer
+      options._injectStyles = hook
+      // register for functioal component in vue file
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return existing(h, context)
+      }
+    }
+  }
+
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
+}
+
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -424,10 +533,10 @@ function getDefaultAdapter() {
   var adapter;
   if (typeof XMLHttpRequest !== 'undefined') {
     // For browsers use XHR adapter
-    adapter = __webpack_require__(7);
+    adapter = __webpack_require__(8);
   } else if (typeof process !== 'undefined') {
     // For node use HTTP adapter
-    adapter = __webpack_require__(7);
+    adapter = __webpack_require__(8);
   }
   return adapter;
 }
@@ -502,10 +611,10 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = defaults;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -3046,7 +3155,7 @@ Popper.Defaults = Defaults;
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -13417,7 +13526,7 @@ return jQuery;
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13435,7 +13544,7 @@ module.exports = function bind(fn, thisArg) {
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -13625,7 +13734,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13636,7 +13745,7 @@ var settle = __webpack_require__(23);
 var buildURL = __webpack_require__(25);
 var parseHeaders = __webpack_require__(26);
 var isURLSameOrigin = __webpack_require__(27);
-var createError = __webpack_require__(8);
+var createError = __webpack_require__(9);
 var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(28);
 
 module.exports = function xhrAdapter(config) {
@@ -13812,7 +13921,7 @@ module.exports = function xhrAdapter(config) {
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13837,7 +13946,7 @@ module.exports = function createError(message, config, code, request, response) 
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13849,7 +13958,7 @@ module.exports = function isCancel(value) {
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13875,120 +13984,11 @@ module.exports = Cancel;
 
 
 /***/ }),
-/* 11 */
-/***/ (function(module, exports) {
-
-/* globals __VUE_SSR_CONTEXT__ */
-
-// IMPORTANT: Do NOT use ES2015 features in this file.
-// This module is a runtime utility for cleaner component module output and will
-// be included in the final webpack user bundle.
-
-module.exports = function normalizeComponent (
-  rawScriptExports,
-  compiledTemplate,
-  functionalTemplate,
-  injectStyles,
-  scopeId,
-  moduleIdentifier /* server only */
-) {
-  var esModule
-  var scriptExports = rawScriptExports = rawScriptExports || {}
-
-  // ES6 modules interop
-  var type = typeof rawScriptExports.default
-  if (type === 'object' || type === 'function') {
-    esModule = rawScriptExports
-    scriptExports = rawScriptExports.default
-  }
-
-  // Vue.extend constructor export interop
-  var options = typeof scriptExports === 'function'
-    ? scriptExports.options
-    : scriptExports
-
-  // render functions
-  if (compiledTemplate) {
-    options.render = compiledTemplate.render
-    options.staticRenderFns = compiledTemplate.staticRenderFns
-    options._compiled = true
-  }
-
-  // functional template
-  if (functionalTemplate) {
-    options.functional = true
-  }
-
-  // scopedId
-  if (scopeId) {
-    options._scopeId = scopeId
-  }
-
-  var hook
-  if (moduleIdentifier) { // server build
-    hook = function (context) {
-      // 2.3 injection
-      context =
-        context || // cached call
-        (this.$vnode && this.$vnode.ssrContext) || // stateful
-        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
-      // 2.2 with runInNewContext: true
-      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-        context = __VUE_SSR_CONTEXT__
-      }
-      // inject component styles
-      if (injectStyles) {
-        injectStyles.call(this, context)
-      }
-      // register component module identifier for async chunk inferrence
-      if (context && context._registeredComponents) {
-        context._registeredComponents.add(moduleIdentifier)
-      }
-    }
-    // used by ssr in case component is cached and beforeCreate
-    // never gets called
-    options._ssrRegister = hook
-  } else if (injectStyles) {
-    hook = injectStyles
-  }
-
-  if (hook) {
-    var functional = options.functional
-    var existing = functional
-      ? options.render
-      : options.beforeCreate
-
-    if (!functional) {
-      // inject component registration as beforeCreate hook
-      options.beforeCreate = existing
-        ? [].concat(existing, hook)
-        : [hook]
-    } else {
-      // for template-only hot-reload because in that case the render fn doesn't
-      // go through the normalizer
-      options._injectStyles = hook
-      // register for functioal component in vue file
-      options.render = function renderWithStyleInjection (h, context) {
-        hook.call(context)
-        return existing(h, context)
-      }
-    }
-  }
-
-  return {
-    esModule: esModule,
-    exports: scriptExports,
-    options: options
-  }
-}
-
-
-/***/ }),
 /* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(13);
-module.exports = __webpack_require__(46);
+module.exports = __webpack_require__(52);
 
 
 /***/ }),
@@ -14012,11 +14012,575 @@ window.Vue = __webpack_require__(37);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('app-component', __webpack_require__(51));
+Vue.component('app-component', __webpack_require__(40));
 
 var app = new Vue({
-  el: '#app'
+    el: '#app'
 });
+
+var thumbs1 = document.getElementById("thumbnail-slider");
+var thumbs2 = document.getElementById("thumbs2");
+var closeBtn = document.getElementById("closeBtn");
+var slides = thumbs1.getElementsByTagName("li");
+for (var i = 0; i < slides.length; i++) {
+    slides[i].index = i;
+    slides[i].onclick = function (e) {
+        var li = this;
+        var clickedEnlargeBtn = false;
+        if (e.offsetX > 220 && e.offsetY < 25) clickedEnlargeBtn = true;
+        if (li.className.indexOf("active") != -1 || clickedEnlargeBtn) {
+            thumbs2.style.display = "block";
+            mcThumbs2.init(li.index);
+        }
+    };
+}
+
+thumbs2.onclick = closeBtn.onclick = function (e) {
+    //This event will be triggered only when clicking the area outside the thumbs or clicking the CLOSE button
+    thumbs2.style.display = "none";
+};
+
+var thumbnailSliderOptions = {
+    sliderId: "thumbnail-slider",
+    orientation: "horizontal",
+    thumbWidth: "300px",
+    thumbHeight: "150px",
+    showMode: 3,
+    autoAdvance: false,
+    selectable: true,
+    slideInterval: 3000,
+    transitionSpeed: 1000,
+    shuffle: false,
+    startSlideIndex: 0, //0-based
+    pauseOnHover: true,
+    initSliderByCallingInitFunc: false,
+    rightGap: "default",
+    keyboardNav: true,
+    mousewheelNav: true,
+    before: null,
+    license: "mylicense"
+};
+
+var thumbs2Op = {
+    sliderId: "thumbs2",
+    orientation: "vertical",
+    thumbWidth: "50%",
+    thumbHeight: "auto",
+    showMode: 3,
+    autoAdvance: false,
+    selectable: true,
+    slideInterval: 3000,
+    transitionSpeed: 900,
+    shuffle: false,
+    startSlideIndex: 0, //0-based
+    pauseOnHover: true,
+    initSliderByCallingInitFunc: true,
+    rightGap: 0,
+    keyboardNav: true,
+    mousewheelNav: true,
+    before: null,
+    license: "mylicense"
+};
+
+var mcThumbnailSlider = new ThumbnailSlider(thumbnailSliderOptions);
+var mcThumbs2 = new ThumbnailSlider(thumbs2Op);
+
+/* ThumbnailSlider Slider v2015.10.26. Copyright(C) www.menucool.com. All rights reserved. */
+function ThumbnailSlider(a) {
+    "use strict";
+    if (typeof String.prototype.trim !== "function") String.prototype.trim = function () {
+        return this.replace(/^\s+|\s+$/g, "");
+    };var e = "length",
+        l = document,
+        Mb = function Mb(c) {
+        var a = c.childNodes;if (a && a[e]) {
+            var b = a[e];while (b--) {
+                a[b].nodeType != 1 && a[b][m].removeChild(a[b]);
+            }
+        }
+    },
+        eb = function eb(a) {
+        if (a && a.stopPropagation) a.stopPropagation();else if (a && typeof a.cancelBubble != "undefined") a.cancelBubble = true;
+    },
+        db = function db(b) {
+        var a = b || window.event;if (a.preventDefault) a.preventDefault();else if (a) a.returnValue = false;
+    },
+        Qb = function Qb(b) {
+        if (typeof b[f].webkitAnimationName != "undefined") var a = "-webkit-";else a = "";return a;
+    },
+        Kb = function Kb() {
+        var b = l.getElementsByTagName("head");if (b[e]) {
+            var a = l.createElement("style");b[0].appendChild(a);return a.sheet ? a.sheet : a.styleSheet;
+        } else return 0;
+    },
+        xb = ["$1$2$3", "$1$2$3", "$1$24", "$1$23", "$1$22"],
+        vb = function vb(d, c) {
+        for (var b = [], a = 0; a < d[e]; a++) {
+            b[b[e]] = String[kb](d[Z](a) - (c ? c : 3));
+        }return b.join("");
+    },
+        Vb = function Vb(a) {
+        return a.replace(/(?:.*\.)?(\w)([\w\-])?[^.]*(\w)\.[^.]*$/, "$1$3$2");
+    },
+        wb = [/(?:.*\.)?(\w)([\w\-])[^.]*(\w)\.[^.]+$/, /.*([\w\-])\.(\w)(\w)\.[^.]+$/, /^(?:.*\.)?(\w)(\w)\.[^.]+$/, /.*([\w\-])([\w\-])\.com\.[^.]+$/, /^(\w)[^.]*(\w)$/],
+        p = window.setTimeout,
+        s = "nextSibling",
+        q = "previousSibling",
+        Ub = l.all && !window.atob,
+        o = {};o.a = Kb();var mb = function mb(b) {
+        b = "#" + a.b + b.replace("__", o.p);o.a.insertRule(b, 0);
+    },
+        Db = function Db(a, c, f, e, b) {
+        var d = "@" + o.p + "keyframes " + a + " {from{" + c + ";} to{" + f + ";}}";o.a.insertRule(d, 0);mb(" " + e + "{__animation:" + a + " " + b + ";}");
+    },
+        Ib = function Ib() {
+        Db("mcSpinner", "transform:rotate(0deg)", "transform:rotate(360deg)", "li.loading::after", ".7s linear infinite");mb(" ul li.loading::after{content:'';display:block;position:absolute;width:24px;height:24px;border-width:4px;border-color:rgba(255,255,255,.8);border-style:solid;border-top-color:black;border-right-color:rgba(0,0,0,.8);border-radius:50%;margin:auto;left:0;right:0;top:0;bottom:0;}");
+    },
+        Ab = function Ab() {
+        var c = "#" + a.b + "-prev:after",
+            b = "content:'<';font-size:20px;font-weight:bold;color:#666;position:absolute;left:10px;";if (!a.c) b = b.replace("<", "^");o.a.addRule(c, b, 0);o.a.addRule(c.replace("prev", "next"), b.replace("<", ">").replace("^", "v").replace("left", "right"), 0);
+    },
+        E,
+        N,
+        A,
+        B,
+        C,
+        rb,
+        L = {},
+        w = {},
+        z;E = (navigator.msPointerEnabled || navigator.pointerEnabled) && (navigator.msMaxTouchPoints || navigator.maxTouchPoints);var Bb = function Bb(a) {
+        return A == "pointerdown" && (a.pointerType == a.MSPOINTER_TYPE_MOUSE || a.pointerType == "mouse");
+    };N = "ontouchstart" in window || window.DocumentTouch && l instanceof DocumentTouch || E;var Cb = function Cb() {
+        if (N) {
+            if (navigator.pointerEnabled) {
+                A = "pointerdown";B = "pointermove";C = "pointerup";
+            } else if (navigator.msPointerEnabled) {
+                A = "MSPointerDown";B = "MSPointerMove";C = "MSPointerUp";
+            } else {
+                A = "touchstart";B = "touchmove";C = "touchend";
+            }rb = { handleEvent: function handleEvent(a) {
+                    a.preventManipulation && a.preventManipulation();switch (a.type) {case A:
+                            this.a(a);break;case B:
+                            this.b(a);break;case C:
+                            this.c(a);}eb(a);
+                }, a: function a(_a) {
+                    if (Bb(_a) || _c[e] < 2) return;var d = E ? _a : _a.touches[0];L = { x: d[bb], y: d[cb], l: _b.pS };z = null;w = {};_b[t](B, this, false);_b[t](C, this, false);
+                }, b: function b(a) {
+                    if (!E && (a.touches[e] > 1 || a.scale && a.scale !== 1)) return;var b = E ? a : a.touches[0];w = { x: b[bb] - L.x, y: b[cb] - L.y };if (z === null) z = !!(z || Math.abs(w.x) < Math.abs(w.y));if (!z) {
+                        db(a);W = 0;ub();i(L.l + w.x, 1);
+                    }
+                }, c: function c() {
+                    if (z === false) {
+                        var e = g,
+                            l = Math.abs(w.x) > 30;if (l) {
+                            var f = w.x > 0 ? 1 : -1,
+                                m = f * w.x * 1.5 / _c[g][h];if (f === 1 && a.f == 3 && !_c[g][q]) {
+                                var k = _b.firstChild[d];_b.insertBefore(_b.lastChild, _b.firstChild);i(_b.pS + k - _b.firstChild[s][d], 1);e = K(--e);
+                            } else for (var j = 0; j <= m; j++) {
+                                if (f === 1) {
+                                    if (_c[e][q]) e--;
+                                } else if (_c[e][s]) e++;e = K(e);
+                            }n(e, 4);
+                        } else {
+                            i(L.l);if (a.g) R = window.setInterval(function () {
+                                J(g + 1, 0);
+                            }, a.i);
+                        }p(function () {
+                            W = 1;
+                        }, 500);
+                    }_b.removeEventListener(B, this, false);_b.removeEventListener(C, this, false);
+                } };_b[t](A, rb, false);
+        }
+    },
+        Pb = function Pb(a) {
+        var b = Vb(document.domain.replace("www.", ""));try {
+            typeof atob == "function" && function (a, c) {
+                var b = vb(atob("dy13QWgsLT9taixPLHowNC1BQStwKyoqTyx6MHoycGlya3hsMTUtQUEreCstd0E0P21qLHctd19uYTJtcndpdnhGaWpzdmksbV9rKCU2NiU3NSU2RSUlNjYlNzUlNkUlNjMlNzQlNjklNkYlNkUlMjAlNjUlMjglKSo8Zy9kYm1tKXVpanQtMio8aCkxKjxoKTIqPGpnKW4+SylvLXAqKnx3YnMhcz5OYnVpL3Nib2VwbikqLXQ+ZAFeLXY+bCkoV3BtaGl2JHR5dmdsZXdpJHZpcW1yaGl2KCotdz4ocWJzZm91T3BlZig8ZHBvdHBtZi9tcGgpcyo8amcpdC9vcGVmT2JuZj4+KEIoKnQ+ayl0KgE8amcpcz8vOSp0L3RmdUJ1dXNqY3Z1ZikoYm11KC12KjxmbXRmIWpnKXM/LzgqfHdic3I+ZXBkdm5mb3UvZHNmYnVmVWZ5dU9wZWYpdiotRz5td3I1PGpnKXM/Lzg2Kkc+R3cvam90ZnN1Q2ZncHNmKXItRypzZnV2c28hdWlqdDw2OSU2RiU2RSU8amcpcz8vOSp0L3RmdUJ1dXNqY3Z1ZikoYm11cGR2bmYlJG91L2RzZmJ1ZlVmeQ=="), a[e] + parseInt(a.charAt(1))).substr(0, 3);typeof this[b] === "function" && this[b](c, wb, xb);
+            }(b, a);
+        } catch (c) {}
+    },
+        f = "style",
+        t = "addEventListener",
+        r = "className",
+        m = "parentNode",
+        kb = "fromCharCode",
+        Z = "charCodeAt",
+        Sb = function Sb(a) {
+        for (var c, d, b = a[e]; b; c = parseInt(Math.random() * b), d = a[--b], a[b] = a[c], a[c] = d) {}return a;
+    },
+        Rb = function Rb(a, c) {
+        var b = a[e];while (b--) {
+            if (a[b] === c) return true;
+        }return false;
+    },
+        I = function I(a, c) {
+        var b = false;if (a[r]) b = Rb(a[r].split(" "), c);return b;
+    },
+        P = function P(a, b, c) {
+        if (!I(a, b)) if (a[r] == "") a[r] = b;else if (c) a[r] = b + " " + a[r];else a[r] += " " + b;
+    },
+        H = function H(c, f) {
+        if (c[r]) {
+            for (var d = "", b = c[r].split(" "), a = 0, g = b[e]; a < g; a++) {
+                if (b[a] !== f) d += b[a] + " ";
+            }c[r] = d.trim();
+        }
+    },
+        K = function K(b) {
+        var a = _c[e];return b >= 0 ? b % a : (a + b % a) % a;
+    },
+        v = function v(a, c, b) {
+        if (a[t]) a[t](c, b, false);else a.attachEvent && a.attachEvent("on" + c, b);
+    },
+        i = function i(d, e) {
+        var c = _b[f];if (o.c) {
+            c.webkitTransitionDuration = c.transitionDuration = (e ? 0 : a.j) + "ms";c.webkitTransform = c.transform = "translate" + (a.c ? "X(" : "Y(") + d + "px)";
+        } else c[lb] = d + "px";_b.pS = d;
+    },
+        ob = function ob(a) {
+        return !a.complete ? 0 : a.width === 0 ? 0 : 1;
+    },
+        M = null,
+        j,
+        x = 0,
+        _b,
+        _c = [],
+        g = 0,
+        R,
+        Wb,
+        S = 0,
+        fb = 0,
+        tb,
+        y = 0,
+        W = 1,
+        ab,
+        ib,
+        d,
+        h,
+        k,
+        lb,
+        u = 0,
+        bb,
+        cb,
+        sb,
+        Lb = function Lb(b) {
+        if (!b.zimg) {
+            b.zimg = 1;b.thumb = b.thumbSrc = 0;var h = b.getElementsByTagName("*");if (h[e]) for (var i = 0; i < h[e]; i++) {
+                var d = h[i];if (I(d, "thumb")) {
+                    if (d.tagName == "A") {
+                        var c = d.getAttribute("href");d[f].backgroundImage = "url('" + c + "')";
+                    } else if (d.tagName == "IMG") c = d.src;else {
+                        c = d[f].backgroundImage;if (c && c.indexOf("url(") != -1) c = c.substring(4, c[e] - 1).replace(/[\'\"]/g, "");
+                    }if (d[m].tagName != "A") d[f].cursor = a.h ? "pointer" : "default";if (c) {
+                        b.thumb = d;b.thumbSrc = c;var g = new Image();g.onload = g.onerror = function () {
+                            b.zimg = 1;var a = this;if (a.width && a.height) {
+                                H(b, "loading");O(b, a);
+                            } else O(b, 0);p(function () {
+                                a = null;
+                            }, 20);
+                        };g.src = c;if (ob(g)) {
+                            b.zimg = 1;O(b, g);g = null;
+                        } else {
+                            P(b, "loading");b.zimg = g;
+                        }
+                    }break;
+                }
+            }
+        }if (b.zimg !== 1 && ob(b.zimg)) {
+            H(b, "loading");O(b, b.zimg);b.zimg = 1;
+        }
+    },
+        qb = 0,
+        jb = function jb(a) {
+        return g == 0 && a == _c[e] - 1;
+    },
+        nb = function nb(i, m) {
+        var l = _c[i],
+            f = 1;if (a.f == 3) {
+            if (m == 4) f = l[d] >= _c[g][d];else f = i > g && !jb(i) || g == _c[e] - 1 && i == 0;
+        } else if (m == 4) {
+            if (_b.pS + l[d] < 20) f = 0;else if (_b.pS + l[d] + l[h] >= j[k]) f = 1;else f = -1;
+        } else f = i >= g && !jb(i);return f;
+    },
+        F = function F(a) {
+        return a.indexOf("%") != -1 ? parseFloat(a) / 100 : parseInt(a);
+    },
+        Fb = function Fb(a, d, c) {
+        if (d.indexOf("px") != -1 && c.indexOf("px") != -1) {
+            a[f].width = d;a[f].height = c;
+        } else {
+            var b = a[q];if (!b || !b[f].width) b = a[s];if (b && b[f].width) {
+                a[f].width = b[f].width;a[f].height = b[f].height;
+            } else a[f].width = a[f].height = "64px";
+        }
+    },
+        O = function O(p, k) {
+        var j = a.d,
+            d = a.e;if (!k) Fb(p, j, d);else {
+            var i = k.naturalWidth || k.width,
+                h = k.naturalHeight || k.height,
+                e = "width",
+                g = "height",
+                c = p[f];if (j == "auto") {
+                if (d == "auto") {
+                    c[g] = h + "px";c[e] = i + "px";
+                } else if (d.indexOf("%") != -1) {
+                    var o = (window.innerHeight || l.documentElement.clientHeight) * F(d);c[g] = o + "px";c[e] = i / h * o + "px";if (!a.c) _b[m][f].width = c[e];
+                } else {
+                    c[g] = d;c[e] = i / h * F(d) + "px";
+                }
+            } else if (j.indexOf("%") != -1) {
+                if (d == "auto" || d.indexOf("%") != -1) {
+                    var n = F(j),
+                        q = _b[m][m].clientWidth;if (!a.c && n < .71 && q < 415) n = .9;var r = q * n;c[e] = r + "px";c[g] = h / i * r + "px";if (!a.c) _b[m][f].width = c[e];
+                } else {
+                    c[e] = i / h * F(d) + "px";c[g] = d;
+                }
+            } else {
+                c[e] = j;if (d == "auto" || d.indexOf("%") != -1) c[g] = h / i * F(j) + "px";else c[g] = d;
+            }
+        }
+    },
+        G = function G(d, i, l, o) {
+        var g = x || 5,
+            r = 0;if (a.f == 3 && i) {
+            if (l) var f = Math.ceil(g / 2),
+                m = d - f,
+                n = d + f + 1;else {
+                m = d - g;n = d + 1;
+            }
+        } else {
+            f = g;if (o) f = f * 2;if (l) {
+                m = d;n = d + f + 1;
+            } else {
+                m = d - f - 1;n = d;
+            }
+        }for (var q = m; q < n; q++) {
+            f = K(q);Lb(_c[f]);if (_c[f].zimg !== 1) r = 1;
+        }if (i) {
+            !qb++ && Gb();if ((!r || qb > 10) && M) {
+                if (_b[h] > j[k] || x >= _c[e]) {
+                    x = g + 2;if (x > _c[e]) x = _c[e];Jb();
+                } else {
+                    x = g + 1;G(d, i, l, o);
+                }
+            } else p(function () {
+                G(d, i, l, o);
+            }, 500);
+        }
+    },
+        T = function T(a) {
+        return _b.pS + a[d] < 0 ? a : a[q] ? T(a[q]) : a;
+    },
+        D = function D(a) {
+        return _b.pS + a[d] + a[h] > j[k] ? a : a[s] ? D(a[s]) : a;
+    },
+        U = function U(a, b) {
+        return b[d] - a[d] + 20 > j[k] ? a[s] : a[q] ? U(a[q], b) : a;
+    },
+        zb = function zb(c) {
+        if (a.f == 2) var b = c;else b = T(c);if (b[q]) b = U(b, b);return b;
+    },
+        Nb = function Nb(f, l) {
+        f = K(f);var e = _c[f];if (g == f && l != 4 && a.f != 3) return f;var m = nb(f, l);if (a.f == 3) {
+            if (l && l != 3 && l != 4) e = m ? D(_c[g]) : T(_c[g]);i(-e[d] + (j[k] - e[h]) / 2, l == 3);
+        } else if (l === 4) {
+            if (_b.pS + e[d] < 20) {
+                e = U(_c[f], _c[f]);if (e[q]) i(-e[d] + u);else {
+                    i(80);p(function () {
+                        i(0);
+                    }, a.j / 2);
+                }
+            } else if (a.o === 0 && !e[s] && _b.pS + _b[h] == j[k]) {
+                i(j[k] - _b[h] - 80);p(function () {
+                    i(j[k] - _b[h]);
+                }, a.j / 2);
+            } else _b.pS + e[d] + e[h] + 30 > j[k] && V(e);return f;
+        } else if (l) {
+            e = m ? D(_c[g]) : zb(_c[g]);if (m) V(e);else i(-e[d] + u);
+        } else if (a.f == 2) {
+            if (!m) i(-e[d] + u);else if (_b.pS + e[d] + e[h] + 20 > j[k]) {
+                var n = e[s];if (!n) n = e;i(-n[d] - n[h] - u + j[k]);
+            }
+        } else if (_b.pS + _b[h] <= j[k]) {
+            e = _c[0];i(-e[d] + u);
+        } else {
+            if (a.f == 4) e = D(_c[g]);V(e);
+        }return e.ix;
+    },
+        V = function V(c) {
+        if (typeof a.o == "number" && _b[h] - c[d] + a.o < j[k]) i(j[k] - _b[h] - a.o);else i(-c[d] + u);
+    },
+        Gb = function Gb() {
+        new Function("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", function (c) {
+            for (var b = [], a = 0, d = c[e]; a < d; a++) {
+                b[b[e]] = String[kb](c[Z](a) - 4);
+            }return b.join("");
+        }('zev$NAjyrgxmsr,|0}-\x7Fzev$eAjyrgxmsr,~-\x7Fzev$gA~_fa,4-2xsWxvmrk,-?vixyvr$g2wyfwxv,g2pirkxl15-\x81?vixyvr$|/}_5a/e,}_4a-/e,}_6a-\x810OAjyrgxmsr,|0}-\x7Fvixyvr$|2glevEx,}-\x810qAe_k,+spjluzl+-a\x80\x80+5:+0rAtevwiMrx,O,q05--\x80\x80:0zAm_k,+kvthpu+-a\x80\x80+p5x+0sAz2vitpegi,i_r16a0l_r16a-2wtpmx,++-?j2tAh,g-?mj,q2mrhi|Sj,N,+f+/r0s--AA15-\x7Fzev$vAQexl2verhsq,-0w0yAk,+[o|tiuhps\'Zspkly\'{yphs\'}lyzpvu+-?mj,v@27-wAg_na_na2tvizmsywWmfpmrk?mj,v@2:**%w-\x7FwAg_na_na_na?mj,w**w2ri|xWmfpmrk-wAw2ri|xWmfpmrk\x81mj,vB2=-wAm2fsh}?mj,O,z04-AA+p+**O,z0z2pirkxl15-AA+x+-wA4?mj,w-w_na2mrwivxFijsvi,m_k,+jylh{l[l\x7F{Uvkl+-a,y-0w-\x81')).apply(this, [a, Z, _b, Qb, wb, o, vb, xb, document, m]);
+    },
+        Jb = function Jb() {
+        u = _c[e] > 1 ? _c[1][d] - _c[0][d] - _c[0][h] : 0;_b[f].msTouchAction = _b[f].touchAction = a.c ? "pan-y" : "pan-x";_b[f].webkitTransitionProperty = _b[f].transitionProperty = "transform";_b[f].webkitTransitionTimingFunction = _b[f].transitionTimingFunction = "cubic-bezier(.2,.88,.5,1)";n(g, a.f == 3 ? 3 : 1);
+    },
+        n = function n(c, b) {
+        a.m && clearTimeout(ab);J(c, b);if (a.g) {
+            clearInterval(R);R = window.setInterval(function () {
+                J(g + 1, 0);
+            }, a.i);
+        }
+    },
+        Q = function Q() {
+        y = !y;tb[r] = y ? "pause" : "";!y && n(g + 1, 0);
+    },
+        Tb = function Tb() {
+        if (a.g) if (y) p(Q, 2200);else Q();
+    },
+        Eb = function Eb(a) {
+        if (!a) a = window.event;var b = a.keyCode;b == 37 && n(g - 1, 1);b == 39 && n(g + 1, 1);
+    },
+        ub = function ub() {
+        clearInterval(R);
+    },
+        Y = function Y(a) {
+        return !a ? 0 : a.nodeType != 1 ? Y(a[m]) : a.tagName == "LI" ? a : a.tagName == "UL" ? 0 : Y(a[m]);
+    },
+        Hb = function Hb() {
+        a.b = a.sliderId;a.c = a.orientation;a.d = a.thumbWidth;a.e = a.thumbHeight;a.f = a.showMode;a.g = a.autoAdvance;a.h = a.selectable;a.i = a.slideInterval;a.j = a.transitionSpeed;a.k = a.shuffle;a.l = a.startSlideIndex;a.m = a.pauseOnHover;a.o = a.rightGap;a.p = a.keyboardNav;a.q = a.mousewheelNav;a.r = a.before;a.a = a.license;a.c = a.c == "horizontal";if (a.i < a.j + 1e3) a.i = a.j + 1e3;sb = a.j + 100;if (a.f == 2 || a.f == 3) a.h = true;a.m = a.m && !N && a.g;var b = a.c;h = b ? "offsetWidth" : "offsetHeight";k = b ? "clientWidth" : "clientHeight";d = b ? "offsetLeft" : "offsetTop";lb = b ? "left" : "top";bb = b ? "pageX" : "pageY";cb = b ? "pageY" : "pageX";
+    },
+        pb = function pb(s) {
+        Hb();_b = s;_b.pS = 0;Pb(a.a);j = _b[m];if (a.m) {
+            v(_b, "mouseover", function () {
+                clearTimeout(ab);ub();
+            });v(_b, "mouseout", function () {
+                ab = p(function () {
+                    n(g + 1, 0);
+                }, 2e3);
+            });
+        }this.b();v(_b, "click", function (c) {
+            var b = c.target || c.srcElement;if (b && b.nodeType == 1) {
+                b.tagName == "A" && I(b, "thumb") && db(c);if (a.h) {
+                    var d = Y(b);if (d) W && n(d.ix, 4);
+                }
+            }eb(c);
+        });if (a.q) {
+            var q = l.getElementById(a.b),
+                i = /Firefox/i.test(navigator.userAgent) ? "DOMMouseScroll" : "mousewheel",
+                d = null;v(q, i, function (a) {
+                var a = a || window.event,
+                    b = a.detail ? -a.detail : a.wheelDelta;if (b) {
+                    clearTimeout(d);b = b > 0 ? 1 : -1;d = p(function () {
+                        J(g - b, 4);
+                    }, 60);
+                }db(a);
+            });
+        }Cb();G(0, 1, 1, 0);o.c = typeof _b[f].transform != "undefined" || typeof _b[f].webkitTransform != "undefined";if (o.a) if (o.a.insertRule && !Ub) Ib();else l.all && !l[t] && Ab();a.p && v(l, "keydown", Eb);v(l, "visibilitychange", Tb);if ((a.d + a.e).indexOf("%") != -1) {
+            var h = null,
+                r = function r(e) {
+                var d = e[f],
+                    j = e.offsetWidth,
+                    i = e.offsetHeight;if (a.d.indexOf("%") != -1) {
+                    var c = parseFloat(a.d) / 100,
+                        g = _b[m][m].clientWidth;if (!a.c && c < .71 && g < 415) c = .9;d.width = g * c + "px";d.height = i / j * g * c + "px";
+                } else {
+                    c = parseFloat(a.e) / 100;var h = (window.innerHeight || l.documentElement.clientHeight) * c;d.height = h + "px";d.width = j / i * h + "px";
+                }if (!a.c) _b[m][f].width = d.width;
+            },
+                k = function k() {
+                clearTimeout(h);h = p(function () {
+                    for (var a = 0, b = _c[e]; a < b; a++) {
+                        r(_c[a]);
+                    }
+                }, 99);
+            };v(window, "resize", k);
+        }
+    },
+        yb = function yb(g) {
+        if (a.h) {
+            for (var d = 0, i = _c[e]; d < i; d++) {
+                H(_c[d], "active");_c[d][f].zIndex = 0;
+            }P(_c[g], "active");_c[g][f].zIndex = 1;
+        }S == 0 && M.e();if (a.f != 3) {
+            if (_b.pS + u < 0) H(S, "disabled");else P(S, "disabled");if (_b.pS + _b[h] - u - 1 <= j[k]) P(fb, "disabled");else H(fb, "disabled");
+        }
+    },
+        hb = function hb() {
+        var a = _b.firstChild;if (_b.pS + a[d] > -50) return;while (1) {
+            if (_b.pS + a[d] < 0 && a[s]) a = a[s];else {
+                if (a[q]) a = a[q];break;
+            }
+        }var e = a[d],
+            c = _b.firstChild;while (c != a) {
+            _b.appendChild(_b.firstChild);c = _b.firstChild;
+        }i(_b.pS + e - a[d], 1);
+    },
+        gb = function gb() {
+        var a = D(_b.firstChild),
+            f = a[d],
+            c = _b.lastChild,
+            e = 0;while (c != a && e < x && c.zimg === 1) {
+            _b.insertBefore(_b.lastChild, _b.firstChild);c = _b.lastChild;e++;
+        }i(_b.pS + f - a[d], 1);
+    },
+        J = function J(b, d) {
+        if (_c[e] < 2) return;b = K(b);if (!d && (y || b == g)) return;var f = nb(b, d);if (d && f != -1) {
+            G(b, 0, f, 1);if (a.f == 3) {
+                clearTimeout(ib);if (f) hb();else gb();
+            }
+        }var h = g;b = Nb(b, d);yb(b);g = b;G(b, 0, 1, a.f == 4);if (a.f == 3) ib = p(hb, sb);a.r && a.r(h, b, d);
+    };pb.prototype = { c: function c() {
+            for (var g = _b.children, d = 0, h = g[e]; d < h; d++) {
+                _c[d] = g[d];_c[d].ix = d;_c[d][f].display = a.c ? "inline-block" : "block";
+            }
+        }, b: function b() {
+            Mb(_b);this.c();var f = 0;if (a.k) {
+                for (var g = Sb(_c), d = 0, i = g[e]; d < i; d++) {
+                    _b.appendChild(g[d]);
+                }f = 1;
+            } else if (a.l) {
+                for (var h = a.l % _c[e], d = 0; d < h; d++) {
+                    _b.appendChild(_c[d]);
+                }f = 1;
+            }f && this.c();
+        }, d: function d(_d, c) {
+            var b = l.createElement("div");b.id = a.b + _d;if (c) b.onclick = c;N && b[t]("touchstart", function (a) {
+                a.preventDefault();a.target.click();eb(a);
+            }, false);b = j[m].appendChild(b);return b;
+        }, e: function e() {
+            S = this.d("-prev", function () {
+                !I(this, "disabled") && n(g - 1, 1);
+            });fb = this.d("-next", function () {
+                !I(this, "disabled") && n(g + 1, 1);
+            });tb = this.d("-pause-play", Q);
+        } };var X = function X() {
+        var b = l.getElementById(a.sliderId);if (b) {
+            var c = b.getElementsByTagName("ul");if (c[e]) M = new pb(c[0]);
+        }
+    },
+        Ob = function Ob(c) {
+        var a = 0;function b() {
+            if (a) return;a = 1;p(c, 4);
+        }if (l[t]) l[t]("DOMContentLoaded", b, false);else v(window, "load", b);
+    };if (!a.initSliderByCallingInitFunc) if (l.getElementById(a.sliderId)) X();else Ob(X);return { display: function display(a) {
+            if (_c[e]) {
+                if (typeof a == "number") var b = a;else b = a.ix;n(b, 4);
+            }
+        }, prev: function prev() {
+            n(g - 1, 1);
+        }, next: function next() {
+            n(g + 1, 1);
+        }, getPos: function getPos() {
+            return g;
+        }, getSlides: function getSlides() {
+            return _c;
+        }, getSlideIndex: function getSlideIndex(a) {
+            return a.ix;
+        }, toggle: Q, init: function init(e) {
+            !M && X();if (typeof e == "number") var b = e;else b = b ? e.ix : 0;if (a.f == 3) {
+                i(-_c[b][d] + (j[k] - _c[b][h]) / 2, 1);gb();J(b, 0);
+            } else {
+                i(-_c[b][d] + j[h], 4);n(b, 4);
+            }
+        } };
+}
 
 /***/ }),
 /* 14 */
@@ -14024,7 +14588,7 @@ var app = new Vue({
 
 
 window._ = __webpack_require__(15);
-window.Popper = __webpack_require__(3).default;
+window.Popper = __webpack_require__(4).default;
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -14033,7 +14597,7 @@ window.Popper = __webpack_require__(3).default;
  */
 
 try {
-  window.$ = window.jQuery = __webpack_require__(4);
+  window.$ = window.jQuery = __webpack_require__(5);
 
   __webpack_require__(17);
 } catch (e) {}
@@ -31232,7 +31796,7 @@ module.exports = function(module) {
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
   */
 (function (global, factory) {
-   true ? factory(exports, __webpack_require__(4), __webpack_require__(3)) :
+   true ? factory(exports, __webpack_require__(5), __webpack_require__(4)) :
   typeof define === 'function' && define.amd ? define(['exports', 'jquery', 'popper.js'], factory) :
   (factory((global.bootstrap = {}),global.jQuery,global.Popper));
 }(this, (function (exports,$,Popper) { 'use strict';
@@ -35186,9 +35750,9 @@ module.exports = __webpack_require__(19);
 
 
 var utils = __webpack_require__(0);
-var bind = __webpack_require__(5);
+var bind = __webpack_require__(6);
 var Axios = __webpack_require__(21);
-var defaults = __webpack_require__(2);
+var defaults = __webpack_require__(3);
 
 /**
  * Create an instance of Axios
@@ -35221,9 +35785,9 @@ axios.create = function create(instanceConfig) {
 };
 
 // Expose Cancel & CancelToken
-axios.Cancel = __webpack_require__(10);
+axios.Cancel = __webpack_require__(11);
 axios.CancelToken = __webpack_require__(35);
-axios.isCancel = __webpack_require__(9);
+axios.isCancel = __webpack_require__(10);
 
 // Expose all/spread
 axios.all = function all(promises) {
@@ -35271,7 +35835,7 @@ function isSlowBuffer (obj) {
 "use strict";
 
 
-var defaults = __webpack_require__(2);
+var defaults = __webpack_require__(3);
 var utils = __webpack_require__(0);
 var InterceptorManager = __webpack_require__(30);
 var dispatchRequest = __webpack_require__(31);
@@ -35376,7 +35940,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 "use strict";
 
 
-var createError = __webpack_require__(8);
+var createError = __webpack_require__(9);
 
 /**
  * Resolve or reject a Promise based on response status.
@@ -35809,8 +36373,8 @@ module.exports = InterceptorManager;
 
 var utils = __webpack_require__(0);
 var transformData = __webpack_require__(32);
-var isCancel = __webpack_require__(9);
-var defaults = __webpack_require__(2);
+var isCancel = __webpack_require__(10);
+var defaults = __webpack_require__(3);
 var isAbsoluteURL = __webpack_require__(33);
 var combineURLs = __webpack_require__(34);
 
@@ -35969,7 +36533,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 "use strict";
 
 
-var Cancel = __webpack_require__(10);
+var Cancel = __webpack_require__(11);
 
 /**
  * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -47287,34 +47851,18 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(6)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(7)))
 
 /***/ }),
-/* 40 */,
-/* 41 */,
-/* 42 */,
-/* 43 */,
-/* 44 */,
-/* 45 */,
-/* 46 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 47 */,
-/* 48 */,
-/* 49 */,
-/* 50 */,
-/* 51 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(11)
+var normalizeComponent = __webpack_require__(2)
 /* script */
-var __vue_script__ = __webpack_require__(52)
+var __vue_script__ = __webpack_require__(41)
 /* template */
-var __vue_template__ = __webpack_require__(53)
+var __vue_template__ = __webpack_require__(51)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -47353,14 +47901,14 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 52 */
+/* 41 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__HeaderSearch_vue__ = __webpack_require__(54);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__HeaderSearch_vue__ = __webpack_require__(42);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__HeaderSearch_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__HeaderSearch_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Resturant_vue__ = __webpack_require__(60);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Resturant_vue__ = __webpack_require__(45);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Resturant_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__Resturant_vue__);
 //
 //
@@ -47494,7 +48042,1004 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 53 */
+/* 42 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(2)
+/* script */
+var __vue_script__ = __webpack_require__(43)
+/* template */
+var __vue_template__ = __webpack_require__(44)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/js/components/HeaderSearch.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-35851000", Component.options)
+  } else {
+    hotAPI.reload("data-v-35851000", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 43 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	mounted: function mounted() {
+		console.log("Header Search Component mounted");
+	}
+});
+
+/***/ }),
+/* 44 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _vm._m(0)
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      { staticClass: "w3-display-left w3-padding w3-col l6 m8" },
+      [
+        _c("div", { staticClass: "w3-container w3-red" }, [
+          _c("h2", [
+            _c("i", { staticClass: "fa fa-bed w3-margin-right" }),
+            _vm._v("Find Food !")
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "w3-container w3-white w3-padding-16" }, [
+          _c(
+            "form",
+            { attrs: { action: "/action_page.php", target: "_blank" } },
+            [
+              _c(
+                "div",
+                {
+                  staticClass: "w3-row-padding",
+                  staticStyle: { margin: "0 -16px" }
+                },
+                [
+                  _c("div", { staticClass: "w3-half w3-margin-bottom" }, [
+                    _c("label", [
+                      _c("i", { staticClass: "fa fa-compass" }),
+                      _vm._v(" City")
+                    ]),
+                    _vm._v(" "),
+                    _c("input", {
+                      staticClass: "w3-input w3-border",
+                      attrs: {
+                        type: "text",
+                        placeholder: "Islamabad",
+                        name: "city",
+                        required: ""
+                      }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "w3-half" }, [
+                    _c("label", [
+                      _c("i", { staticClass: "fa fa-circle" }),
+                      _vm._v(" Food Category")
+                    ]),
+                    _vm._v(" "),
+                    _c("input", {
+                      staticClass: "w3-input w3-border",
+                      attrs: {
+                        type: "text",
+                        placeholder: "Pizza",
+                        name: "food",
+                        required: ""
+                      }
+                    })
+                  ])
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass: "w3-row-padding",
+                  staticStyle: { margin: "8px -16px" }
+                },
+                [
+                  _c("div", { staticClass: "w3-half w3-margin-bottom" }, [
+                    _c("label", [
+                      _c("i", { staticClass: "fa fa-at" }),
+                      _vm._v(" Resturant")
+                    ]),
+                    _vm._v(" "),
+                    _c("input", {
+                      staticClass: "w3-input w3-border",
+                      attrs: { type: "text", placeholder: "KFC", required: "" }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "w3-half" }, [
+                    _c("label", [
+                      _c("i", { staticClass: "fa fa-map-marker" }),
+                      _vm._v(" Near Resturants ( km )")
+                    ]),
+                    _vm._v(" "),
+                    _c("input", {
+                      staticClass: "w3-input w3-border",
+                      attrs: {
+                        type: "number",
+                        value: "0",
+                        name: "Kids",
+                        min: "0",
+                        max: "6"
+                      }
+                    })
+                  ])
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "w3-button w3-dark-grey",
+                  attrs: { type: "submit" }
+                },
+                [
+                  _c("i", { staticClass: "fa fa-search w3-margin-right" }),
+                  _vm._v(" Search availability")
+                ]
+              )
+            ]
+          )
+        ])
+      ]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-35851000", module.exports)
+  }
+}
+
+/***/ }),
+/* 45 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(2)
+/* script */
+var __vue_script__ = __webpack_require__(46)
+/* template */
+var __vue_template__ = __webpack_require__(50)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/js/components/Resturant.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-57937c0a", Component.options)
+  } else {
+    hotAPI.reload("data-v-57937c0a", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 46 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ResturantSearch_vue__ = __webpack_require__(47);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ResturantSearch_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__ResturantSearch_vue__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	mounted: function mounted() {
+		console.log("Resturant component is mounted");
+	},
+
+	components: {
+		ResturantSearch: __WEBPACK_IMPORTED_MODULE_0__ResturantSearch_vue___default.a
+	}
+});
+
+/***/ }),
+/* 47 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(2)
+/* script */
+var __vue_script__ = __webpack_require__(48)
+/* template */
+var __vue_template__ = __webpack_require__(49)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/js/components/ResturantSearch.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-5d691983", Component.options)
+  } else {
+    hotAPI.reload("data-v-5d691983", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 48 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	mounted: function mounted() {
+		console.log('Resturant Search Component Mounted');
+	}
+});
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _vm._m(0)
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", [
+      _c("div", { staticClass: "w3-row-padding" }, [
+        _c("div", { staticClass: "w3-col m3" }, [
+          _c("label", [
+            _c("i", { staticClass: "fa fa-calendar-o" }),
+            _vm._v(" Check In")
+          ]),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "w3-input w3-border",
+            attrs: { type: "text", placeholder: "DD MM YYYY" }
+          })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "w3-col m3" }, [
+          _c("label", [
+            _c("i", { staticClass: "fa fa-calendar-o" }),
+            _vm._v(" Check Out")
+          ]),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "w3-input w3-border",
+            attrs: { type: "text", placeholder: "DD MM YYYY" }
+          })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "w3-col m2" }, [
+          _c("label", [
+            _c("i", { staticClass: "fa fa-male" }),
+            _vm._v(" Adults")
+          ]),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "w3-input w3-border",
+            attrs: { type: "number", placeholder: "1" }
+          })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "w3-col m2" }, [
+          _c("label", [
+            _c("i", { staticClass: "fa fa-child" }),
+            _vm._v(" Kids")
+          ]),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "w3-input w3-border",
+            attrs: { type: "number", placeholder: "0" }
+          })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "w3-col m2" }, [
+          _c("label", [
+            _c("i", { staticClass: "fa fa-search" }),
+            _vm._v(" Search")
+          ]),
+          _vm._v(" "),
+          _c("button", { staticClass: "w3-button w3-block w3-black" }, [
+            _vm._v("Search")
+          ])
+        ])
+      ])
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-5d691983", module.exports)
+  }
+}
+
+/***/ }),
+/* 50 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    [
+      _vm._m(0),
+      _vm._v(" "),
+      _c("ResturantSearch", { staticStyle: { "padding-bottom": "10px" } }),
+      _vm._v(" "),
+      _vm._m(1)
+    ],
+    1
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      { staticClass: "w3-container w3-margin-top", attrs: { id: "rooms" } },
+      [
+        _c("h3", [_vm._v("Rooms")]),
+        _vm._v(" "),
+        _c("p", [
+          _vm._v(
+            "Make yourself at home is our slogan. We offer the best beds in the industry. Sleep well and rest well."
+          )
+        ])
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      { staticStyle: { padding: "40px 0", background: "#f8fafc" } },
+      [
+        _c("div", { attrs: { id: "thumbnail-slider" } }, [
+          _c("div", { staticClass: "inner" }, [
+            _c("ul", [
+              _c("li", [
+                _c("a", {
+                  staticClass: "thumb",
+                  attrs: {
+                    href:
+                      "https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"
+                  }
+                }),
+                _vm._v(" "),
+                _c(
+                  "p",
+                  { staticStyle: { color: "white", "font-size": "30px" } },
+                  [_vm._v("Select your City")]
+                )
+              ]),
+              _vm._v(" "),
+              _c("li", [
+                _c("a", {
+                  staticClass: "thumb",
+                  attrs: {
+                    href:
+                      "https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"
+                  }
+                }),
+                _vm._v(" "),
+                _c(
+                  "p",
+                  { staticStyle: { color: "white", "font-size": "30px" } },
+                  [_vm._v("Select your City")]
+                )
+              ]),
+              _vm._v(" "),
+              _c("li", [
+                _c("a", {
+                  staticClass: "thumb",
+                  attrs: {
+                    href:
+                      "https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"
+                  }
+                }),
+                _vm._v(" "),
+                _c(
+                  "p",
+                  { staticStyle: { color: "white", "font-size": "30px" } },
+                  [_vm._v("Select your City")]
+                )
+              ]),
+              _vm._v(" "),
+              _c("li", [
+                _c("a", {
+                  staticClass: "thumb",
+                  attrs: {
+                    href:
+                      "https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"
+                  }
+                }),
+                _vm._v(" "),
+                _c(
+                  "p",
+                  { staticStyle: { color: "white", "font-size": "30px" } },
+                  [_vm._v("Select your City")]
+                )
+              ]),
+              _vm._v(" "),
+              _c("li", [
+                _c("a", {
+                  staticClass: "thumb",
+                  attrs: {
+                    href:
+                      "https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"
+                  }
+                }),
+                _vm._v(" "),
+                _c(
+                  "p",
+                  { staticStyle: { color: "white", "font-size": "30px" } },
+                  [_vm._v("Select your City")]
+                )
+              ]),
+              _vm._v(" "),
+              _c("li", [
+                _c("a", {
+                  staticClass: "thumb",
+                  attrs: {
+                    href:
+                      "https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"
+                  }
+                }),
+                _vm._v(" "),
+                _c(
+                  "p",
+                  { staticStyle: { color: "white", "font-size": "30px" } },
+                  [_vm._v("Select your City")]
+                )
+              ]),
+              _vm._v(" "),
+              _c("li", [
+                _c("a", {
+                  staticClass: "thumb",
+                  attrs: {
+                    href:
+                      "https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"
+                  }
+                }),
+                _vm._v(" "),
+                _c(
+                  "p",
+                  { staticStyle: { color: "white", "font-size": "30px" } },
+                  [_vm._v("Select your City")]
+                )
+              ]),
+              _vm._v(" "),
+              _c("li", [
+                _c("a", {
+                  staticClass: "thumb",
+                  attrs: {
+                    href:
+                      "https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"
+                  }
+                })
+              ]),
+              _vm._v(" "),
+              _c("li", [
+                _c("a", {
+                  staticClass: "thumb",
+                  attrs: {
+                    href:
+                      "https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"
+                  }
+                }),
+                _vm._v(" "),
+                _c(
+                  "p",
+                  { staticStyle: { color: "white", "font-size": "30px" } },
+                  [_vm._v("Select your City")]
+                )
+              ]),
+              _vm._v(" "),
+              _c("li", [
+                _c("a", {
+                  staticClass: "thumb",
+                  attrs: {
+                    href:
+                      "https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"
+                  }
+                }),
+                _vm._v(" "),
+                _c(
+                  "p",
+                  { staticStyle: { color: "white", "font-size": "30px" } },
+                  [_vm._v("Select your City")]
+                )
+              ])
+            ])
+          ]),
+          _vm._v(" "),
+          _c("br"),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              staticStyle: {
+                position: "absolute",
+                left: "50%",
+                "margin-left": "-100px"
+              }
+            },
+            [
+              _c(
+                "p",
+                { staticStyle: { color: "black", "font-size": "30px" } },
+                [_vm._v("Choose City")]
+              )
+            ]
+          )
+        ]),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticStyle: { display: "none" }, attrs: { id: "thumbs2" } },
+          [
+            _c("div", { staticClass: "inner" }, [
+              _c("ul", [
+                _c("li", [
+                  _c("a", {
+                    staticClass: "thumb",
+                    attrs: {
+                      href:
+                        "https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "p",
+                    { staticStyle: { color: "white", "font-size": "30px" } },
+                    [_vm._v("Select your City")]
+                  )
+                ]),
+                _vm._v(" "),
+                _c("li", [
+                  _c("a", {
+                    staticClass: "thumb",
+                    attrs: {
+                      href:
+                        "https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "p",
+                    { staticStyle: { color: "white", "font-size": "30px" } },
+                    [_vm._v("Select your City")]
+                  )
+                ]),
+                _vm._v(" "),
+                _c("li", [
+                  _c("a", {
+                    staticClass: "thumb",
+                    attrs: {
+                      href:
+                        "https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "p",
+                    { staticStyle: { color: "white", "font-size": "30px" } },
+                    [_vm._v("Select your City")]
+                  )
+                ]),
+                _vm._v(" "),
+                _c("li", [
+                  _c("a", {
+                    staticClass: "thumb",
+                    attrs: {
+                      href:
+                        "https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "p",
+                    { staticStyle: { color: "white", "font-size": "30px" } },
+                    [_vm._v("Select your City")]
+                  )
+                ]),
+                _vm._v(" "),
+                _c("li", [
+                  _c("a", {
+                    staticClass: "thumb",
+                    attrs: {
+                      href:
+                        "https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "p",
+                    { staticStyle: { color: "white", "font-size": "30px" } },
+                    [_vm._v("Select your City")]
+                  )
+                ]),
+                _vm._v(" "),
+                _c("li", [
+                  _c("a", {
+                    staticClass: "thumb",
+                    attrs: {
+                      href:
+                        "https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "p",
+                    { staticStyle: { color: "white", "font-size": "30px" } },
+                    [_vm._v("Select your City")]
+                  )
+                ]),
+                _vm._v(" "),
+                _c("li", [
+                  _c("a", {
+                    staticClass: "thumb",
+                    attrs: {
+                      href:
+                        "https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "p",
+                    { staticStyle: { color: "white", "font-size": "30px" } },
+                    [_vm._v("Select your City")]
+                  )
+                ]),
+                _vm._v(" "),
+                _c("li", [
+                  _c("a", {
+                    staticClass: "thumb",
+                    attrs: {
+                      href:
+                        "https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "p",
+                    { staticStyle: { color: "white", "font-size": "30px" } },
+                    [_vm._v("Select your City")]
+                  )
+                ]),
+                _vm._v(" "),
+                _c("li", [
+                  _c("a", {
+                    staticClass: "thumb",
+                    attrs: {
+                      href:
+                        "https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "p",
+                    { staticStyle: { color: "white", "font-size": "30px" } },
+                    [_vm._v("Select your City")]
+                  )
+                ]),
+                _vm._v(" "),
+                _c("li", [
+                  _c("a", {
+                    staticClass: "thumb",
+                    attrs: {
+                      href:
+                        "https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "p",
+                    { staticStyle: { color: "white", "font-size": "30px" } },
+                    [_vm._v("Select your City")]
+                  )
+                ])
+              ])
+            ]),
+            _vm._v(" "),
+            _c("div", { attrs: { id: "closeBtn" } }, [_vm._v("CLOSE")])
+          ]
+        )
+      ]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-57937c0a", module.exports)
+  }
+}
+
+/***/ }),
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -47949,697 +49494,10 @@ if (false) {
 }
 
 /***/ }),
-/* 54 */
-/***/ (function(module, exports, __webpack_require__) {
+/* 52 */
+/***/ (function(module, exports) {
 
-var disposed = false
-var normalizeComponent = __webpack_require__(11)
-/* script */
-var __vue_script__ = __webpack_require__(55)
-/* template */
-var __vue_template__ = __webpack_require__(56)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/js/components/HeaderSearch.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-35851000", Component.options)
-  } else {
-    hotAPI.reload("data-v-35851000", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 55 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-	mounted: function mounted() {
-		console.log("Header Search Component mounted");
-	}
-});
-
-/***/ }),
-/* 56 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _vm._m(0)
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      { staticClass: "w3-display-left w3-padding w3-col l6 m8" },
-      [
-        _c("div", { staticClass: "w3-container w3-red" }, [
-          _c("h2", [
-            _c("i", { staticClass: "fa fa-bed w3-margin-right" }),
-            _vm._v("Hotel Name")
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "w3-container w3-white w3-padding-16" }, [
-          _c(
-            "form",
-            { attrs: { action: "/action_page.php", target: "_blank" } },
-            [
-              _c(
-                "div",
-                {
-                  staticClass: "w3-row-padding",
-                  staticStyle: { margin: "0 -16px" }
-                },
-                [
-                  _c("div", { staticClass: "w3-half w3-margin-bottom" }, [
-                    _c("label", [
-                      _c("i", { staticClass: "fa fa-calendar-o" }),
-                      _vm._v(" Check In")
-                    ]),
-                    _vm._v(" "),
-                    _c("input", {
-                      staticClass: "w3-input w3-border",
-                      attrs: {
-                        type: "text",
-                        placeholder: "DD MM YYYY",
-                        name: "CheckIn",
-                        required: ""
-                      }
-                    })
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "w3-half" }, [
-                    _c("label", [
-                      _c("i", { staticClass: "fa fa-calendar-o" }),
-                      _vm._v(" Check Out")
-                    ]),
-                    _vm._v(" "),
-                    _c("input", {
-                      staticClass: "w3-input w3-border",
-                      attrs: {
-                        type: "text",
-                        placeholder: "DD MM YYYY",
-                        name: "CheckOut",
-                        required: ""
-                      }
-                    })
-                  ])
-                ]
-              ),
-              _vm._v(" "),
-              _c(
-                "div",
-                {
-                  staticClass: "w3-row-padding",
-                  staticStyle: { margin: "8px -16px" }
-                },
-                [
-                  _c("div", { staticClass: "w3-half w3-margin-bottom" }, [
-                    _c("label", [
-                      _c("i", { staticClass: "fa fa-male" }),
-                      _vm._v(" Adults")
-                    ]),
-                    _vm._v(" "),
-                    _c("input", {
-                      staticClass: "w3-input w3-border",
-                      attrs: {
-                        type: "number",
-                        value: "1",
-                        name: "Adults",
-                        min: "1",
-                        max: "6"
-                      }
-                    })
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "w3-half" }, [
-                    _c("label", [
-                      _c("i", { staticClass: "fa fa-child" }),
-                      _vm._v(" Kids")
-                    ]),
-                    _vm._v(" "),
-                    _c("input", {
-                      staticClass: "w3-input w3-border",
-                      attrs: {
-                        type: "number",
-                        value: "0",
-                        name: "Kids",
-                        min: "0",
-                        max: "6"
-                      }
-                    })
-                  ])
-                ]
-              ),
-              _vm._v(" "),
-              _c(
-                "button",
-                {
-                  staticClass: "w3-button w3-dark-grey",
-                  attrs: { type: "submit" }
-                },
-                [
-                  _c("i", { staticClass: "fa fa-search w3-margin-right" }),
-                  _vm._v(" Search availability")
-                ]
-              )
-            ]
-          )
-        ])
-      ]
-    )
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-35851000", module.exports)
-  }
-}
-
-/***/ }),
-/* 57 */,
-/* 58 */,
-/* 59 */,
-/* 60 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(11)
-/* script */
-var __vue_script__ = __webpack_require__(61)
-/* template */
-var __vue_template__ = __webpack_require__(62)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/js/components/Resturant.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-57937c0a", Component.options)
-  } else {
-    hotAPI.reload("data-v-57937c0a", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 61 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ResturantSearch_vue__ = __webpack_require__(63);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ResturantSearch_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__ResturantSearch_vue__);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-	mounted: function mounted() {
-		console.log("Resturant component is mounted");
-	},
-
-	components: {
-		ResturantSearch: __WEBPACK_IMPORTED_MODULE_0__ResturantSearch_vue___default.a
-	}
-});
-
-/***/ }),
-/* 62 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    [_vm._m(0), _vm._v(" "), _c("ResturantSearch"), _vm._v(" "), _vm._m(1)],
-    1
-  )
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      { staticClass: "w3-container w3-margin-top", attrs: { id: "rooms" } },
-      [
-        _c("h3", [_vm._v("Rooms")]),
-        _vm._v(" "),
-        _c("p", [
-          _vm._v(
-            "Make yourself at home is our slogan. We offer the best beds in the industry. Sleep well and rest well."
-          )
-        ])
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "w3-row-padding w3-padding-16" }, [
-      _c("div", { staticClass: "w3-third w3-margin-bottom" }, [
-        _c("img", {
-          staticStyle: { width: "100%" },
-          attrs: {
-            src:
-              "http://www.hdwallpaperspulse.com/wp-content/uploads/2015/11/25/Awesome-best-nature-pictures.jpg",
-            alt: "Norway"
-          }
-        }),
-        _vm._v(" "),
-        _c("div", { staticClass: "w3-container w3-white" }, [
-          _c("h3", [_vm._v("Single Room")]),
-          _vm._v(" "),
-          _c("h6", { staticClass: "w3-opacity" }, [_vm._v("From $99")]),
-          _vm._v(" "),
-          _c("p", [_vm._v("Single bed")]),
-          _vm._v(" "),
-          _c("p", [_vm._v("15m"), _c("sup", [_vm._v("2")])]),
-          _vm._v(" "),
-          _c("p", { staticClass: "w3-large" }, [
-            _c("i", { staticClass: "fa fa-bath" }),
-            _vm._v(" "),
-            _c("i", { staticClass: "fa fa-phone" }),
-            _vm._v(" "),
-            _c("i", { staticClass: "fa fa-wifi" })
-          ]),
-          _vm._v(" "),
-          _c(
-            "button",
-            { staticClass: "w3-button w3-block w3-black w3-margin-bottom" },
-            [_vm._v("Choose Room")]
-          )
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "w3-third w3-margin-bottom" }, [
-        _c("img", {
-          staticStyle: { width: "100%" },
-          attrs: {
-            src:
-              "http://www.hdwallpaperspulse.com/wp-content/uploads/2015/11/25/Awesome-best-nature-pictures.jpg",
-            alt: "Norway"
-          }
-        }),
-        _vm._v(" "),
-        _c("div", { staticClass: "w3-container w3-white" }, [
-          _c("h3", [_vm._v("Double Room")]),
-          _vm._v(" "),
-          _c("h6", { staticClass: "w3-opacity" }, [_vm._v("From $149")]),
-          _vm._v(" "),
-          _c("p", [_vm._v("Queen-size bed")]),
-          _vm._v(" "),
-          _c("p", [_vm._v("25m"), _c("sup", [_vm._v("2")])]),
-          _vm._v(" "),
-          _c("p", { staticClass: "w3-large" }, [
-            _c("i", { staticClass: "fa fa-bath" }),
-            _vm._v(" "),
-            _c("i", { staticClass: "fa fa-phone" }),
-            _vm._v(" "),
-            _c("i", { staticClass: "fa fa-wifi" }),
-            _vm._v(" "),
-            _c("i", { staticClass: "fa fa-tv" })
-          ]),
-          _vm._v(" "),
-          _c(
-            "button",
-            { staticClass: "w3-button w3-block w3-black w3-margin-bottom" },
-            [_vm._v("Choose Room")]
-          )
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "w3-third w3-margin-bottom" }, [
-        _c("img", {
-          staticStyle: { width: "100%" },
-          attrs: {
-            src:
-              "http://www.hdwallpaperspulse.com/wp-content/uploads/2015/11/25/Awesome-best-nature-pictures.jpg",
-            alt: "Norway"
-          }
-        }),
-        _vm._v(" "),
-        _c("div", { staticClass: "w3-container w3-white" }, [
-          _c("h3", [_vm._v("Deluxe Room")]),
-          _vm._v(" "),
-          _c("h6", { staticClass: "w3-opacity" }, [_vm._v("From $199")]),
-          _vm._v(" "),
-          _c("p", [_vm._v("King-size bed")]),
-          _vm._v(" "),
-          _c("p", [_vm._v("40m"), _c("sup", [_vm._v("2")])]),
-          _vm._v(" "),
-          _c("p", { staticClass: "w3-large" }, [
-            _c("i", { staticClass: "fa fa-bath" }),
-            _vm._v(" "),
-            _c("i", { staticClass: "fa fa-phone" }),
-            _vm._v(" "),
-            _c("i", { staticClass: "fa fa-wifi" }),
-            _vm._v(" "),
-            _c("i", { staticClass: "fa fa-tv" }),
-            _vm._v(" "),
-            _c("i", { staticClass: "fa fa-glass" }),
-            _vm._v(" "),
-            _c("i", { staticClass: "fa fa-cutlery" })
-          ]),
-          _vm._v(" "),
-          _c(
-            "button",
-            { staticClass: "w3-button w3-block w3-black w3-margin-bottom" },
-            [_vm._v("Choose Room")]
-          )
-        ])
-      ])
-    ])
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-57937c0a", module.exports)
-  }
-}
-
-/***/ }),
-/* 63 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(11)
-/* script */
-var __vue_script__ = __webpack_require__(64)
-/* template */
-var __vue_template__ = __webpack_require__(65)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/js/components/ResturantSearch.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-5d691983", Component.options)
-  } else {
-    hotAPI.reload("data-v-5d691983", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 64 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-	mounted: function mounted() {
-		console.log('Resturant Search Component Mounted');
-	}
-});
-
-/***/ }),
-/* 65 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _vm._m(0)
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", [
-      _c("div", { staticClass: "w3-row-padding" }, [
-        _c("div", { staticClass: "w3-col m3" }, [
-          _c("label", [
-            _c("i", { staticClass: "fa fa-calendar-o" }),
-            _vm._v(" Check In")
-          ]),
-          _vm._v(" "),
-          _c("input", {
-            staticClass: "w3-input w3-border",
-            attrs: { type: "text", placeholder: "DD MM YYYY" }
-          })
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "w3-col m3" }, [
-          _c("label", [
-            _c("i", { staticClass: "fa fa-calendar-o" }),
-            _vm._v(" Check Out")
-          ]),
-          _vm._v(" "),
-          _c("input", {
-            staticClass: "w3-input w3-border",
-            attrs: { type: "text", placeholder: "DD MM YYYY" }
-          })
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "w3-col m2" }, [
-          _c("label", [
-            _c("i", { staticClass: "fa fa-male" }),
-            _vm._v(" Adults")
-          ]),
-          _vm._v(" "),
-          _c("input", {
-            staticClass: "w3-input w3-border",
-            attrs: { type: "number", placeholder: "1" }
-          })
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "w3-col m2" }, [
-          _c("label", [
-            _c("i", { staticClass: "fa fa-child" }),
-            _vm._v(" Kids")
-          ]),
-          _vm._v(" "),
-          _c("input", {
-            staticClass: "w3-input w3-border",
-            attrs: { type: "number", placeholder: "0" }
-          })
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "w3-col m2" }, [
-          _c("label", [
-            _c("i", { staticClass: "fa fa-search" }),
-            _vm._v(" Search")
-          ]),
-          _vm._v(" "),
-          _c("button", { staticClass: "w3-button w3-block w3-black" }, [
-            _vm._v("Search")
-          ])
-        ])
-      ])
-    ])
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-5d691983", module.exports)
-  }
-}
+// removed by extract-text-webpack-plugin
 
 /***/ })
 /******/ ]);

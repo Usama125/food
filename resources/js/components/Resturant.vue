@@ -5,43 +5,107 @@
     <p>Make yourself at home is our slogan. We offer the best beds in the industry. Sleep well and rest well.</p>
   </div>
   
-  	<ResturantSearch></ResturantSearch>
+  	<ResturantSearch style="padding-bottom: 10px"></ResturantSearch>
+  	<!--start-->
+    <div style="padding:40px 0;background:#f8fafc;">
+        <div id="thumbnail-slider">
+            <div class="inner">
+                <ul>
+                    <li>
+                        <a class="thumb" href="https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"></a>
+                        <p style="color:white;font-size:30px;">Select your City</p>
+                    </li>
+                    <li>
+                        <a class="thumb" href="https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"></a>
+                        <p style="color:white;font-size:30px;">Select your City</p>
+                    </li>
+                    <li>
+                        <a class="thumb" href="https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"></a>
+                        <p style="color:white;font-size:30px;">Select your City</p>
+                    </li>
+                    <li>
+                        <a class="thumb" href="https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"></a>
+                        <p style="color:white;font-size:30px;">Select your City</p>
+                    </li>
+                    <li>
+                        <a class="thumb" href="https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"></a>
+                        <p style="color:white;font-size:30px;">Select your City</p>
+                    </li>
+                    <li>
+                        <a class="thumb" href="https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"></a>
+                        <p style="color:white;font-size:30px;">Select your City</p>
+                    </li>
+                    <li>
+                        <a class="thumb" href="https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"></a>
+                        <p style="color:white;font-size:30px;">Select your City</p>
+                    </li>
+                    <li>
+                        <a class="thumb" href="https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"></a>
+                    </li>
+                    <li>
+                        <a class="thumb" href="https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"></a>
+                        <p style="color:white;font-size:30px;">Select your City</p>
+                    </li>
+                    <li>
+                        <a class="thumb" href="https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"></a>
+                        <p style="color:white;font-size:30px;">Select your City</p>
+                    </li>
+                </ul>
+            </div>
+            <br>
+            <div style="position:absolute;left:50%;margin-left: -100px">
+            	<p style="color:black;font-size:30px;">Choose City</p>
+        	</div>
+        </div>
+        <div id="thumbs2" style="display:none;">
+            <div class="inner">
+                <ul>
+                    <li>
+                        <a class="thumb" href="https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"></a>
+                        <p style="color:white;font-size:30px;">Select your City</p>
+                    </li>
+                    <li>
+                        <a class="thumb" href="https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"></a>
+                        <p style="color:white;font-size:30px;">Select your City</p>
+                    </li>
+                    <li>
+                        <a class="thumb" href="https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"></a>
+                        <p style="color:white;font-size:30px;">Select your City</p>
+                    </li>
+                    <li>
+                        <a class="thumb" href="https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"></a>
+                        <p style="color:white;font-size:30px;">Select your City</p>
+                    </li>
+                    <li>
+                        <a class="thumb" href="https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"></a>
+                        <p style="color:white;font-size:30px;">Select your City</p>
+                    </li>
+                    <li>
+                        <a class="thumb" href="https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"></a>
+                        <p style="color:white;font-size:30px;">Select your City</p>
+                    </li>
+                    <li>
+                        <a class="thumb" href="https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"></a>
+                        <p style="color:white;font-size:30px;">Select your City</p>
+                    </li>
+                    <li>
+                        <a class="thumb" href="https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"></a>
+                        <p style="color:white;font-size:30px;">Select your City</p>
+                    </li>
+                    <li>
+                        <a class="thumb" href="https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"></a>
+                        <p style="color:white;font-size:30px;">Select your City</p>
+                    </li>
+                    <li>
+                        <a class="thumb" href="https://cdn.guidingtech.com/imager/media/assets/HD-Mouth-Watering-Food-Wallpapers-for-Desktop-10_acdb3e4bb37d0e3bcc26c97591d3dd6b.jpg"></a>
+                        <p style="color:white;font-size:30px;">Select your City</p>
+                    </li>
+                </ul>
+            </div>
+            <div id="closeBtn">CLOSE</div>
+        </div>
+    </div>
   
-  <div class="w3-row-padding w3-padding-16">
-    <div class="w3-third w3-margin-bottom">
-      <img src="http://www.hdwallpaperspulse.com/wp-content/uploads/2015/11/25/Awesome-best-nature-pictures.jpg" alt="Norway" style="width:100%">
-      <div class="w3-container w3-white">
-        <h3>Single Room</h3>
-        <h6 class="w3-opacity">From $99</h6>
-        <p>Single bed</p>
-        <p>15m<sup>2</sup></p>
-        <p class="w3-large"><i class="fa fa-bath"></i> <i class="fa fa-phone"></i> <i class="fa fa-wifi"></i></p>
-        <button class="w3-button w3-block w3-black w3-margin-bottom">Choose Room</button>
-      </div>
-    </div>
-    <div class="w3-third w3-margin-bottom">
-      <img src="http://www.hdwallpaperspulse.com/wp-content/uploads/2015/11/25/Awesome-best-nature-pictures.jpg" alt="Norway" style="width:100%">
-      <div class="w3-container w3-white">
-        <h3>Double Room</h3>
-        <h6 class="w3-opacity">From $149</h6>
-        <p>Queen-size bed</p>
-        <p>25m<sup>2</sup></p>
-        <p class="w3-large"><i class="fa fa-bath"></i> <i class="fa fa-phone"></i> <i class="fa fa-wifi"></i> <i class="fa fa-tv"></i></p>
-        <button class="w3-button w3-block w3-black w3-margin-bottom">Choose Room</button>
-      </div>
-    </div>
-    <div class="w3-third w3-margin-bottom">
-      <img src="http://www.hdwallpaperspulse.com/wp-content/uploads/2015/11/25/Awesome-best-nature-pictures.jpg" alt="Norway" style="width:100%">
-      <div class="w3-container w3-white">
-        <h3>Deluxe Room</h3>
-        <h6 class="w3-opacity">From $199</h6>
-        <p>King-size bed</p>
-        <p>40m<sup>2</sup></p>
-        <p class="w3-large"><i class="fa fa-bath"></i> <i class="fa fa-phone"></i> <i class="fa fa-wifi"></i> <i class="fa fa-tv"></i> <i class="fa fa-glass"></i> <i class="fa fa-cutlery"></i></p>
-        <button class="w3-button w3-block w3-black w3-margin-bottom">Choose Room</button>
-      </div>
-    </div>
-  </div>
   </div>
 </template>
 

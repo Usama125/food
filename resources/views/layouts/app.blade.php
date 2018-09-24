@@ -76,19 +76,19 @@
     </div> --}}
     <!-- Navigation Bar -->
 <div class="w3-bar w3-white w3-large">
-  <a href="#" class="w3-bar-item w3-button w3-red w3-mobile"><i class="fa fa-bed w3-margin-right"></i>Logo</a>
-  <a href="#rooms" class="w3-bar-item w3-button w3-mobile">Rooms</a>
-  <a href="#about" class="w3-bar-item w3-button w3-mobile">About</a>
+  <a href="#" class="w3-bar-item w3-button w3-red w3-mobile"><i class="fa fa-firefox w3-margin-right"></i>FoodOn</a>
+  <a href="#rooms" class="w3-bar-item w3-button w3-mobile"><i class="fa fa-shopping-cart w3-margin-right"></i>Shops</a>
+  <a href="#about" class="w3-bar-item w3-button w3-mobile"><i class="fa fa-plus-circle w3-margin-right"></i>Deals</a>
   @guest
-  <a href="{{ route('login') }}" class="w3-bar-item w3-button w3-mobile">{{ __('Login') }}</a>
+  <a href="{{ route('login') }}" class="w3-bar-item w3-button w3-right w3-mobile">{{ __('Login') }}</a>
   @if (Route::has('register'))
-       <a href="{{ route('register') }}" class="w3-bar-item w3-button w3-mobile">Register</a>
+       <a href="{{ route('register') }}" class="w3-bar-item w3-right w3-button w3-mobile"><i class="fa fa-user-plus w3-margin-right"></i>Register</a>
   @endif
-  <a href="#contact" class="w3-bar-item w3-button w3-right w3-light-grey w3-mobile">Book Now</a>
+  <a href="#contact" class="w3-bar-item w3-button w3-right w3-mobile"><i class="fa fa-play-circle w3-margin-right"></i>Create Shop</a>
   @else
-    <a href="#rooms" class="w3-bar-item w3-button w3-right w3-light-grey w3-mobile">{{ Auth::user()->name }} <span class="caret"></span></a>
+    <a href="#rooms" class="w3-bar-item w3-button w3-right w3-light-grey w3-mobile"><i class="fa fa-user-circle w3-margin-right"></i>{{ Auth::user()->name }} <span class="caret"></span></a>
     <a href="{{ route('logout') }}" onclick="event.preventDefault();
-        document.getElementById('logout-form').submit();" class="w3-bar-item w3-button w3-right w3-light-grey w3-mobile">{{ __('Logout') }}</a>
+        document.getElementById('logout-form').submit();" class="w3-bar-item w3-button w3-right w3-light-grey w3-mobile"><i class="fa fa-user-times w3-margin-right"></i>{{ __('Logout') }}</a>
         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                         @csrf
                                     </form>
